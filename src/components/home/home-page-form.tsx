@@ -57,7 +57,6 @@ const HomePageForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      console.log("No file selected.");
       return;
     }
 
@@ -67,11 +66,16 @@ const HomePageForm = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
+      const response = await fetch(
+        "https://f0fabae4b68b20.lhr.life/api/v1/send-task",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: formData,
+        },
+      );
       if (response.ok) {
         console.log("File uploaded successfully.");
         handleDelete();
@@ -82,7 +86,7 @@ const HomePageForm = () => {
       console.error("Error uploading file:", error);
     } finally {
       toast({
-        description: <Loader />,
+        description: <Loader className="animate-spin" />,
       });
       setTimeout(() => {
         setIsSubmitting(false);
@@ -138,9 +142,9 @@ const HomePageForm = () => {
             </div>
           ))}
         </div>
-        <div className="bg-muted mt-4 h-2 rounded-full">
+        <div className="mt-4 h-2 rounded-full bg-muted">
           <motion.div
-            className="bg-primary h-full rounded-full"
+            className="h-full rounded-full bg-primary"
             initial={{ width: 0 }}
             animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
             transition={{ duration: 0.5 }}
@@ -166,7 +170,7 @@ const HomePageForm = () => {
               <Input
                 value={input}
                 type="file"
-                accept=".pdf,.jpeg,.png,.zip"
+                accept=".jpeg,.png"
                 onChange={handleFileChange}
                 className="w-full rounded-lg border-2 border-gray-300 p-2"
               />
@@ -198,12 +202,11 @@ const HomePageForm = () => {
                   onCropComplete={onCropComplete}
                 />
               </div>
-              <Button onClick={handleCrop} className="mt-4">
+              <Button onClick={handleCrop} type="button" className="mt-4">
                 Crop Image
               </Button>
             </motion.div>
           )}
-
           {currentStep === 2 && previewUrl && (
             <motion.div
               key="step2"
@@ -230,7 +233,6 @@ const HomePageForm = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
         <div className="mt-4 flex justify-between">
           {currentStep > 0 && (
             <Button type="button" onClick={handlePrevStep} variant="outline">
